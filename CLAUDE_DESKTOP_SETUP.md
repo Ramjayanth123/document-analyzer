@@ -1,18 +1,37 @@
 # 🖥️ Claude Desktop MCP Server Setup Guide
 
-This guide will help you set up and test the Document Analyzer MCP server with Claude Desktop.
+This guide will help you set up and test the Document Analyzer MCP server with Claude Desktop using the **official MCP SDK**.
 
 ## 📋 Prerequisites
 
 1. **Claude Desktop** installed on your system
 2. **Python 3.8+** with our virtual environment set up
 3. **Document Analyzer Server** (this project)
+4. **Official MCP SDK** (now included in requirements)
 
 ## 🔧 Step-by-Step Setup
 
-### Step 1: Locate Claude Desktop Configuration
+### Step 1: Install MCP SDK
 
-First, you need to find where Claude Desktop stores its configuration:
+First, install the official MCP SDK:
+
+```bash
+# Navigate to your project directory
+cd E:\Misogi\document-analyzer
+
+# Activate virtual environment
+venv\Scripts\activate
+
+# Install the MCP SDK
+pip install mcp
+
+# Verify installation
+python -c "import mcp; print('✓ MCP SDK installed successfully')"
+```
+
+### Step 2: Locate Claude Desktop Configuration
+
+Find where Claude Desktop stores its configuration:
 
 **Windows:**
 ```
@@ -29,7 +48,7 @@ First, you need to find where Claude Desktop stores its configuration:
 ~/.config/Claude/claude_desktop_config.json
 ```
 
-### Step 2: Create or Edit Configuration File
+### Step 3: Create or Edit Configuration File
 
 1. **Navigate to the configuration directory**
 2. **Create or edit** `claude_desktop_config.json`
@@ -40,7 +59,7 @@ First, you need to find where Claude Desktop stores its configuration:
   "mcpServers": {
     "document-analyzer": {
       "command": "python",
-      "args": ["E:/Misogi/document-analyzer/mcp_server.py"],
+      "args": ["E:/Misogi/document-analyzer/mcp_server_official.py"],
       "env": {
         "PYTHONPATH": "E:/Misogi/document-analyzer"
       }
@@ -51,41 +70,41 @@ First, you need to find where Claude Desktop stores its configuration:
 
 **⚠️ Important:** Replace `E:/Misogi/document-analyzer/` with your actual project path!
 
-### Step 3: Verify Python Environment
+### Step 4: Test MCP Server with Official SDK
 
-Make sure your Python environment can access the required packages:
-
-```bash
-# Navigate to your project directory
-cd E:\Misogi\document-analyzer
-
-# Activate virtual environment
-venv\Scripts\activate
-
-# Verify packages are installed
-python -c "import textblob, nltk; print('Dependencies OK')"
-```
-
-### Step 4: Test MCP Server Standalone
-
-Before connecting to Claude Desktop, test the server directly:
+Test the server using the official MCP SDK:
 
 ```bash
 # In your project directory with venv activated
-python mcp_server.py
+python mcp_server_official.py
 ```
 
-The server should start and wait for JSON-RPC input. You can test with:
-
-```json
-{"jsonrpc": "2.0", "id": 1, "method": "initialize", "params": {"protocolVersion": "2024-11-05", "capabilities": {}, "clientInfo": {"name": "test", "version": "1.0.0"}}}
-```
+The server should start and show it's using the official MCP SDK with `@app.tool()` decorators.
 
 ### Step 5: Restart Claude Desktop
 
 1. **Close Claude Desktop completely**
 2. **Restart Claude Desktop**
 3. **Check for MCP server connection**
+
+## 🎯 **Key Features of Official MCP Server**
+
+### **@app.tool() Decorators**
+Our server now uses proper MCP decorators:
+
+```python
+@app.tool()
+async def analyze_document(document_id: str) -> list[TextContent]:
+    """Analyze a document with sentiment, keywords, and stats."""
+    # Tool implementation
+```
+
+### **5 Available Tools:**
+1. **`analyze_document`** - Complete document analysis
+2. **`get_sentiment`** - Text sentiment analysis
+3. **`extract_keywords`** - Keyword extraction
+4. **`search_documents`** - Document search
+5. **`add_document`** - Add new documents
 
 ## 🧪 Testing the MCP Tools
 
@@ -113,45 +132,45 @@ Search for documents related to "artificial intelligence" in the collection.
 
 ### 5. Add Document
 ```
-Add a new document with title "My Test Document", author "Test User", category "Testing", and content "This is a test document for the MCP server."
+Add a new document with title "My Test Document", content "This is a test document for the MCP server.", author "Test User", and category "Testing".
 ```
 
 ## 🔍 Troubleshooting
 
 ### Common Issues:
 
-1. **MCP Server Not Found**
+1. **MCP SDK Not Found**
+   - Install MCP SDK: `pip install mcp`
+   - Verify installation: `python -c "import mcp; print('OK')"`
+
+2. **Server Not Starting**
    - Check that the path in `claude_desktop_config.json` is correct
    - Ensure Python is in your system PATH
    - Verify the virtual environment has required packages
 
-2. **Permission Errors**
-   - Make sure the Python script has execute permissions
-   - Check that Claude Desktop can access the file path
-
-3. **Python Import Errors**
-   - Activate your virtual environment
-   - Install missing packages: `pip install textblob nltk`
+3. **Import Errors**
+   - Activate your virtual environment: `venv\Scripts\activate`
+   - Install all dependencies: `pip install -r requirements.txt`
    - Check PYTHONPATH in configuration
-
-4. **JSON-RPC Errors**
-   - Check server logs for specific error messages
-   - Verify the MCP protocol version compatibility
 
 ### Debug Steps:
 
-1. **Check Claude Desktop Logs**
-   - Look for MCP server connection messages
-   - Check for any error messages
-
-2. **Test Server Manually**
+1. **Test Server Manually**
    ```bash
-   python mcp_server.py
+   cd E:\Misogi\document-analyzer
+   venv\Scripts\activate
+   python mcp_server_official.py
    ```
-   
-3. **Verify Configuration**
+
+2. **Verify MCP SDK Installation**
+   ```bash
+   python -c "from mcp.server import Server; print('✓ MCP SDK working')"
+   ```
+
+3. **Check Configuration**
    - Double-check paths in `claude_desktop_config.json`
    - Ensure JSON syntax is valid
+   - Verify file permissions
 
 ## 📊 Expected Results
 
@@ -159,12 +178,14 @@ When working correctly, you should see:
 
 1. **Available Tools** in Claude Desktop interface
 2. **Successful tool calls** with proper responses
-3. **Document analysis results** with sentiment, keywords, and statistics
-4. **Search functionality** working across the document collection
+3. **@app.tool() decorators** working seamlessly
+4. **Structured JSON responses** from document analysis
+5. **All 5 tools** functioning correctly
 
 ## 🎯 Success Indicators
 
 ✅ Claude Desktop shows MCP tools are available  
+✅ `@app.tool()` decorators are working  
 ✅ Document analysis returns complete results  
 ✅ Sentiment analysis works with custom text  
 ✅ Keyword extraction produces relevant terms  
@@ -176,7 +197,7 @@ When working correctly, you should see:
 If you encounter issues:
 
 1. Check the troubleshooting section above
-2. Verify all paths and configurations
+2. Verify MCP SDK installation
 3. Test the server independently first
 4. Check Claude Desktop documentation for MCP setup
 
@@ -193,4 +214,16 @@ Then test with:
 python test_client.py
 ```
 
-This provides a web interface at `http://localhost:8000` for testing the same functionality. 
+This provides a web interface at `http://localhost:8000` for testing the same functionality.
+
+## 🚀 What's New
+
+### **Official MCP SDK Benefits:**
+- ✅ **Proper `@app.tool()` decorators**
+- ✅ **Automatic tool registration**
+- ✅ **Better Claude Desktop integration**
+- ✅ **Improved error handling**
+- ✅ **Async/await support**
+- ✅ **Type validation**
+
+Your MCP server now follows official MCP best practices and should work seamlessly with Claude Desktop! 
