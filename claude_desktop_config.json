@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "document-analyzer": {
+      "command": "python",
+      "args": ["E:/Misogi/document-analyzer/mcp_server.py"],
+      "env": {
+        "PYTHONPATH": "E:/Misogi/document-analyzer"
+      }
+    }
+  }
+} 
